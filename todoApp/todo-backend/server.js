@@ -4,12 +4,13 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/users'); // Import user routes
 
-dotenv.config();
+dotenv.config(); // Load environment variables
 
 const app = express();
-app.use(cors());  // Enable CORS
-app.use(express.json()); //Middleware to parse JSON
-app.use('/users', userRoutes); // Use user routes
+
+// Middleware
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Parse JSON requests
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -20,18 +21,19 @@ mongoose.connect(process.env.MONGO_URI, {
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
-app.use('/users', userRoutes); // Use user routes
+app.use('/users', userRoutes); // User routes
 
 // Root route
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
 });
 
-// Error handling
+// 404 Error handler
 app.use((req, res, next) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'An internal server error occurred' });
